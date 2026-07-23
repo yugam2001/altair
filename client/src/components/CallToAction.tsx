@@ -1,7 +1,15 @@
 import { motion } from 'framer-motion'
 import PrimaryButton from './PrimaryButton'
 
-export default function CallToAction() {
+interface CallToActionProps {
+  onGenerateClick?: () => void
+  generateDisabled?: boolean
+}
+
+export default function CallToAction({
+  onGenerateClick,
+  generateDisabled = false,
+}: CallToActionProps) {
   return (
     <section className="px-6 py-24">
       <motion.div
@@ -20,7 +28,11 @@ export default function CallToAction() {
         </p>
 
         <div className="mt-10 flex justify-center">
-          <PrimaryButton className="bg-nebula-teal hover:bg-nebula-teal/90">
+          <PrimaryButton
+            className="bg-nebula-teal hover:bg-nebula-teal/90"
+            onClick={onGenerateClick}
+            disabled={generateDisabled}
+          >
             Generate My Personalized Roadmap
           </PrimaryButton>
         </div>

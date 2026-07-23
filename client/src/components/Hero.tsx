@@ -1,8 +1,19 @@
+import type { RefObject } from 'react'
 import { motion } from 'framer-motion'
 import Logo from './Logo'
 import PrimaryButton from './PrimaryButton'
 
-export default function Hero() {
+interface HeroProps {
+  logoImageRef?: RefObject<HTMLImageElement | null>
+  onGenerateClick?: () => void
+  generateDisabled?: boolean
+}
+
+export default function Hero({
+  logoImageRef,
+  onGenerateClick,
+  generateDisabled = false,
+}: HeroProps) {
   return (
     <section
       id="home"
@@ -19,7 +30,11 @@ export default function Hero() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className="relative mx-auto flex max-w-4xl flex-col items-center"
       >
-        <Logo size="hero" className="mb-8 md:mb-10" />
+        <Logo
+          size="hero"
+          className="mb-8 md:mb-10"
+          imageRef={logoImageRef}
+        />
 
         <h1 className="text-5xl font-bold tracking-tight text-deep-space sm:text-6xl md:text-7xl">
           Find your way forward.
@@ -34,7 +49,12 @@ export default function Hero() {
           id="generate"
           className="mt-9 flex flex-col items-center gap-4 sm:flex-row"
         >
-          <PrimaryButton>Generate My Personalized Roadmap</PrimaryButton>
+          <PrimaryButton
+            onClick={onGenerateClick}
+            disabled={generateDisabled}
+          >
+            Generate My Personalized Roadmap
+          </PrimaryButton>
 
           <a
             href="#why-altair"

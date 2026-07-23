@@ -30,3 +30,41 @@
     @apply bg-surface font-sans text-primary-text antialiased;
   }
 }
+
+@layer utilities {
+  @keyframes altair-gradient-drift {
+    0% {
+      background-position: 0% 40%;
+    }
+    33% {
+      background-position: 100% 60%;
+    }
+    66% {
+      background-position: 50% 100%;
+    }
+    100% {
+      background-position: 0% 40%;
+    }
+  }
+
+  .altair-bg-gradient {
+    background: linear-gradient(
+      145deg,
+      #ffffff 0%,
+      #f0fdfa 18%,
+      #eff6ff 42%,
+      #fefce8 68%,
+      #f8fafc 85%,
+      #ffffff 100%
+    );
+    background-size: 300% 300%;
+    animation: altair-gradient-drift 25s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .altair-bg-gradient {
+      animation: none;
+      background-position: 50% 50%;
+    }
+  }
+}

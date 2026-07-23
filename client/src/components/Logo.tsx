@@ -1,3 +1,5 @@
+import type { RefObject } from 'react'
+
 type LogoSize = 'nav' | 'hero' | 'footer'
 
 const sizeStyles: Record<
@@ -21,9 +23,14 @@ const sizeStyles: Record<
 interface LogoProps {
   size?: LogoSize
   className?: string
+  imageRef?: RefObject<HTMLImageElement | null>
 }
 
-export default function Logo({ size = 'nav', className = '' }: LogoProps) {
+export default function Logo({
+  size = 'nav',
+  className = '',
+  imageRef,
+}: LogoProps) {
   const styles = sizeStyles[size]
 
   return (
@@ -31,6 +38,7 @@ export default function Logo({ size = 'nav', className = '' }: LogoProps) {
       className={`inline-flex items-center justify-center bg-white ${styles.wrapper} ${className}`}
     >
       <img
+        ref={imageRef}
         src="/logo.png"
         alt="ALTAIR logo"
         className={`object-contain ${styles.image}`}
