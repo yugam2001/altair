@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import BackgroundConstellation from './BackgroundConstellation'
 import ProgressHeader from './ProgressHeader'
@@ -70,11 +71,11 @@ function validateStep(
 }
 
 export default function QuestionnaireCard() {
+  const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [direction, setDirection] = useState(1)
   const [data, setData] = useState<QuestionnaireState>(INITIAL_QUESTIONNAIRE_STATE)
   const [errors, setErrors] = useState<ValidationErrors>({})
-  const [submitted, setSubmitted] = useState(false)
 
   const meta = STEP_META[step - 1]
 
@@ -107,11 +108,11 @@ export default function QuestionnaireCard() {
     if (step < TOTAL_STEPS) {
       goToStep(step + 1, 1)
     } else {
-      setSubmitted(true)
       // Backend integration point — state is ready in `data`
       console.info('Questionnaire complete:', data)
+      navigate('/launch')
     }
-  }, [step, data, goToStep])
+  }, [step, data, goToStep, navigate])
 
   const handlePrevious = useCallback(() => {
     if (step > 1) {
@@ -132,34 +133,6 @@ export default function QuestionnaireCard() {
     }
   }
 
-  if (submitted) {
-    return (
-      <div className="relative flex min-h-svh w-full items-center justify-center px-4 py-10 sm:px-6">
-        <BackgroundConstellation step={TOTAL_STEPS} />
-
-        <div className="relative">
-          <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className={`${CARD_CLASS} text-center`}
-          >
-            <span className="mb-5 inline-block text-3xl" aria-hidden="true">
-              ✨
-            </span>
-            <h2 className="mb-3 text-2xl font-semibold tracking-tight text-primary-text sm:text-[1.75rem]">
-              Your roadmap is on its way
-            </h2>
-            <p className="mx-auto max-w-md text-[15px] leading-relaxed text-secondary-text/90 sm:text-base">
-              We&apos;ve captured everything we need. ALTAIR will guide you forward
-              from here.
-            </p>
-          </motion.div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="relative flex min-h-svh w-full items-center justify-center px-4 py-10 sm:px-6">
       <BackgroundConstellation step={step} />
@@ -171,36 +144,36 @@ export default function QuestionnaireCard() {
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           className={CARD_CLASS}
         >
-        <ProgressHeader
-          step={step}
-          totalSteps={TOTAL_STEPS}
-          emoji={meta.emoji}
-          label={meta.label}
-          subtitle={meta.subtitle}
-        />
+          <ProgressHeader
+            step={step}
+            totalSteps={TOTAL_STEPS}
+            emoji={meta.emoji}
+            label={meta.label}
+            subtitle={meta.subtitle}
+          />
 
-        <div className="relative -mx-2 overflow-visible px-2 py-1">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={step}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {renderStep()}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+          <div className="relative -mx-2 overflow-visible px-2 py-1">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={step}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {renderStep()}
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-        <NavigationButtons
-          step={step}
-          totalSteps={TOTAL_STEPS}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-        />
+          <NavigationButtons
+            step={step}
+            totalSteps={TOTAL_STEPS}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+          />
         </motion.div>
       </div>
     </div>
