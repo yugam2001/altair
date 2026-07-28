@@ -2,7 +2,7 @@
 export const ROADMAP_CONTENT_SECTIONS = [
   {
     id: 'overview',
-    title: 'Overview',
+    title: 'Learning Overview',
     description: 'Your plotted destination and the shape of the journey ahead.',
   },
   {
@@ -39,9 +39,9 @@ export const ROADMAP_CONTENT_SECTIONS = [
 
 /** Route metadata chips — shell placeholders. */
 export const HERO_META_CHIPS = [
-  'Origin · India',
-  'Experience · Beginner',
-  'Horizon · 12 Months',
-  'Pace · 8 hrs/week',
-  'Charted · Just Now',
+  { label: 'Country', value: 'India' },
+  { label: 'Current Level', value: 'Beginner' },
+  { label: 'Timeline', value: '12 Months' },
+  { label: 'Study Time', value: '8 hrs/week' },
+  { label: 'Created', value: 'Just Now' },
 ] as const

@@ -412,4 +412,33 @@
       animation: none;
     }
   }
+
+  @keyframes roadmap-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  .roadmap-skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(15, 23, 42, 0.55) 0%,
+      rgba(30, 58, 138, 0.35) 35%,
+      rgba(147, 197, 253, 0.18) 50%,
+      rgba(30, 58, 138, 0.35) 65%,
+      rgba(15, 23, 42, 0.55) 100%
+    );
+    background-size: 200% 100%;
+    animation: roadmap-shimmer 2.2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .roadmap-skeleton-shimmer {
+      animation: none;
+      background: rgba(30, 58, 138, 0.25);
+    }
+  }
 }

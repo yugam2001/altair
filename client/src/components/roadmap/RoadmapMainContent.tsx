@@ -1,14 +1,10 @@
-import { motion } from 'framer-motion'
 import RoadmapSectionPlaceholder from './RoadmapSectionPlaceholder'
 import { ROADMAP_CONTENT_SECTIONS } from './roadmapSections'
 
 export default function RoadmapMainContent() {
   return (
-    <motion.div
+    <div
       id="roadmap-content"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
       className="mx-auto mt-14 w-[90%] max-w-[1400px] sm:mt-16 md:mt-20"
     >
       <p className="mb-5 text-[12px] font-medium tracking-[0.12em] text-blue-300/70 uppercase sm:mb-6">
@@ -19,6 +15,7 @@ export default function RoadmapMainContent() {
         {ROADMAP_CONTENT_SECTIONS.map((section, index) => (
           <div key={section.id}>
             <RoadmapSectionPlaceholder
+              sectionId={section.id}
               title={section.title}
               description={section.description}
             />
@@ -28,6 +25,6 @@ export default function RoadmapMainContent() {
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   )
 }
