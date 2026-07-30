@@ -1,17 +1,27 @@
 import {
   generateJourneyMap,
-  type JourneyMap,
   type LearnerContext,
 } from "../domain/journeyMapping";
 import { buildRoadmapPrompt } from "../prompts/promptBuilder";
 import type { QuestionnaireResponses } from "../prompts/user.prompt";
 import { generateContent } from "../providers/gemini.provider";
+import { parseAiJson } from "../utils/parseAiJson";
+import {
+  validateRoadmap,
+  type RoadmapData,
+} from "../utils/validateRoadmap";
 
-export interface RoadmapResponse {
-  success: boolean;
-  journeyMap: JourneyMap;
-  aiResponse: string;
-}
+export type RoadmapSuccessResponse = {
+  success: true;
+  roadmap: RoadmapData;
+};
+
+export type RoadmapFailureResponse = {
+  success: false;
+  message: string;
+};
+
+export type RoadmapResponse = RoadmapSuccessResponse | RoadmapFailureResponse;
 
 function toLearnerContext(questionnaire: Record<string, unknown>): LearnerContext {
   return {
@@ -48,8 +58,6 @@ function toQuestionnaireResponses(context: LearnerContext): QuestionnaireRespons
 /**
  * Orchestrates the full roadmap generation pipeline.
  *
- * Current flow:
- *
  *   Receive questionnaire
  *           ↓
  *   Journey Mapping
@@ -58,13 +66,11 @@ function toQuestionnaireResponses(context: LearnerContext): QuestionnaireRespons
  *           ↓
  *   Gemini Provider
  *           ↓
- *   Return AI Response (raw)
- *
- * Future:
+ *   Structured JSON
  *           ↓
  *   Schema Validation
  *           ↓
- *   Return Final Roadmap
+ *   Return Roadmap
  */
 export async function generateRoadmap(
   questionnaire: unknown,
@@ -104,11 +110,37 @@ export async function generateRoadmap(
     throw error;
   }
 
-  console.log("Gemini response received.");
+  console.log("Gemini response received. Parsing JSON...");
+
+  let parsedResponse: unknown;
+
+  try {
+    parsedResponse = parseAiJson(aiResponse);
+  } catch (error) {
+    console.error("Failed to parse AI response as JSON:", error);
+    console.error("Raw AI response:", aiResponse);
+    return {
+      success: false,
+      message: "Invalid AI response.",
+    };
+  }
+
+  console.log("JSON parsed. Validating against roadmap schema...");
+
+  const validation = validateRoadmap(parsedResponse);
+
+  if (!validation.valid) {
+    console.error("Roadmap validation failed:", validation.errors);
+    return {
+      success: false,
+      message: "Roadmap validation failed.",
+    };
+  }
+
+  console.log("Roadmap validated successfully.");
 
   return {
     success: true,
-    journeyMap,
-    aiResponse,
+    roadmap: validation.roadmap,
   };
 }

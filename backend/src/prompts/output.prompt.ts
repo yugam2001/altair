@@ -67,7 +67,19 @@ The \`overview\` object MUST include: ${formatFieldList(OVERVIEW_REQUIRED)}.
 
 ## Validation
 
-Before responding, verify that the JSON parses successfully and satisfies all required fields and array minimums defined in \`roadmap.schema.json\`.`
+Before responding, verify that the JSON parses successfully and satisfies all required fields and array minimums defined in \`roadmap.schema.json\`.
+
+## Critical response constraints
+
+- Return **ONLY** a single raw JSON object
+- Do **NOT** include Markdown formatting of any kind
+- Do **NOT** include explanations, commentary, or notes outside the JSON
+- Do **NOT** wrap the response in code fences (no \`\`\`json blocks)
+- Do **NOT** include introductory text such as "Here is your roadmap"
+- Do **NOT** include trailing notes after the closing brace
+- The first character of your response MUST be \`{\`
+- The last character of your response MUST be \`}\`
+- The response must strictly conform to \`roadmap.schema.json\` with no extra properties`
 }
 
 /** Pre-built output instructions for direct import. */
