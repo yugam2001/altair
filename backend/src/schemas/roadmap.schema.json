@@ -1,0 +1,777 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://altair.app/schemas/roadmap.schema.json",
+  "title": "ALTAIR Roadmap",
+  "description": "Master schema for AI-generated personalised learning roadmaps. This is the single source of truth for AI response validation, backend processing, frontend rendering, exports, history, and refinements. AI responses MUST be valid JSON matching this schema — never Markdown, HTML, or unstructured text.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "metadata",
+    "overview",
+    "timeline",
+    "learningPhases",
+    "projects",
+    "resources",
+    "careerAdvice",
+    "responsibleAI",
+    "nextSteps",
+    "confidence"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Contract version of this schema. Increment when breaking changes are introduced. Consumers should validate this before processing."
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+    "overview": {
+      "$ref": "#/$defs/overview"
+    },
+    "timeline": {
+      "$ref": "#/$defs/timeline"
+    },
+    "learningPhases": {
+      "type": "array",
+      "description": "Sequential learning stages that compose the roadmap journey.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/learningPhase"
+      }
+    },
+    "projects": {
+      "type": "array",
+      "description": "Recommended portfolio and practice projects.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/project"
+      }
+    },
+    "resources": {
+      "type": "array",
+      "description": "Curated learning resources grouped by category. URLs are intentionally omitted in v1.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/resource"
+      }
+    },
+    "careerAdvice": {
+      "$ref": "#/$defs/careerAdvice"
+    },
+    "responsibleAI": {
+      "$ref": "#/$defs/responsibleAI"
+    },
+    "nextSteps": {
+      "$ref": "#/$defs/nextSteps"
+    },
+    "confidence": {
+      "$ref": "#/$defs/confidence"
+    },
+    "extensions": {
+      "$ref": "#/$defs/extensions"
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A non-empty string."
+    },
+    "isoDateTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 date-time string (UTC recommended)."
+    },
+    "difficultyLevel": {
+      "type": "string",
+      "enum": ["Beginner", "Intermediate", "Advanced", "Mixed"],
+      "description": "Relative difficulty level for roadmap content."
+    },
+    "projectDifficulty": {
+      "type": "string",
+      "enum": ["Beginner", "Intermediate", "Advanced"],
+      "description": "Difficulty level for an individual project."
+    },
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Book",
+        "Course",
+        "Video",
+        "Article",
+        "Documentation",
+        "Practice Platform",
+        "Community",
+        "Podcast",
+        "Tool",
+        "Other"
+      ],
+      "description": "The format or medium of the learning resource."
+    },
+    "resourceCategory": {
+      "type": "string",
+      "enum": [
+        "Fundamentals",
+        "Programming",
+        "Frameworks",
+        "Tools",
+        "Soft Skills",
+        "Career",
+        "Interview Prep",
+        "Projects",
+        "Other"
+      ],
+      "description": "High-level grouping for resource organisation and frontend filtering."
+    },
+    "educationLevel": {
+      "type": "string",
+      "enum": [
+        "Class 8–10",
+        "Class 11–12",
+        "Undergraduate",
+        "Postgraduate",
+        "Working Professional"
+      ],
+      "description": "User's current education stage, aligned with the ALTAIR questionnaire."
+    },
+    "currentKnowledge": {
+      "type": "string",
+      "enum": ["Beginner", "Intermediate", "Advanced"],
+      "description": "User's self-assessed knowledge level in the target domain."
+    },
+    "learningStyle": {
+      "type": "string",
+      "enum": [
+        "Videos",
+        "Reading",
+        "Hands-on Projects",
+        "Interactive Courses",
+        "No Preference"
+      ],
+      "description": "User's preferred learning style from the questionnaire."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Provenance, questionnaire inputs, and versioning metadata for this roadmap instance.",
+      "additionalProperties": false,
+      "required": [
+        "roadmapId",
+        "careerGoal",
+        "country",
+        "educationLevel",
+        "currentKnowledge",
+        "studyHoursPerWeek",
+        "learningStyle",
+        "timeline",
+        "generatedAt",
+        "lastUpdated",
+        "version"
+      ],
+      "properties": {
+        "roadmapId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for this roadmap instance. Used for history, exports, and refinements."
+        },
+        "careerGoal": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Target career or role the roadmap is designed to reach (e.g. Software Engineer)."
+        },
+        "country": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "User's country or region, used for localised resource and career context."
+        },
+        "educationLevel": {
+          "$ref": "#/$defs/educationLevel"
+        },
+        "currentKnowledge": {
+          "$ref": "#/$defs/currentKnowledge"
+        },
+        "studyHoursPerWeek": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Weekly study commitment as captured from the questionnaire (e.g. 10 hrs, 8 hrs/week)."
+        },
+        "learningStyle": {
+          "$ref": "#/$defs/learningStyle"
+        },
+        "timeline": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Target completion horizon from the questionnaire (e.g. 1 Year, 6 Months, Flexible)."
+        },
+        "additionalInfo": {
+          "type": "string",
+          "description": "Optional free-text context provided by the user. Improves personalisation and confidence scoring.",
+          "default": ""
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/isoDateTime",
+          "description": "Timestamp when this roadmap was first generated."
+        },
+        "lastUpdated": {
+          "$ref": "#/$defs/isoDateTime",
+          "description": "Timestamp of the most recent modification to this roadmap."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Monotonic revision number for this roadmap instance. Increments on refinements."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "archived", "superseded"],
+          "default": "active",
+          "description": "Lifecycle status. Reserved for roadmap history and version management."
+        },
+        "parentRoadmapId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional reference to the roadmap this version was refined from."
+        },
+        "refinementSummary": {
+          "type": "string",
+          "description": "Optional summary of the user's refinement request that produced this version."
+        },
+        "source": {
+          "type": "string",
+          "enum": ["initial_generation", "refinement", "regeneration"],
+          "default": "initial_generation",
+          "description": "How this roadmap version was created."
+        },
+        "locale": {
+          "type": "string",
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+          "default": "en-GB",
+          "description": "BCP 47 locale for generated content (e.g. en-GB, en-US)."
+        },
+        "exportMetadata": {
+          "$ref": "#/$defs/exportMetadata",
+          "description": "Optional metadata populated when the roadmap is exported. Reserved for PDF/Word export pipelines."
+        }
+      }
+    },
+    "exportMetadata": {
+      "type": "object",
+      "description": "Metadata attached during export operations. Not required for AI generation.",
+      "additionalProperties": false,
+      "properties": {
+        "lastExportedAt": {
+          "$ref": "#/$defs/isoDateTime"
+        },
+        "exportFormats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["pdf", "docx", "clipboard"]
+          },
+          "uniqueItems": true
+        },
+        "exportedBy": {
+          "type": "string",
+          "description": "Optional user or session identifier."
+        }
+      }
+    },
+    "overview": {
+      "type": "object",
+      "description": "High-level summary of the personalised roadmap.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "summary",
+        "estimatedCompletion",
+        "difficulty",
+        "keyHighlights"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Concise roadmap title (e.g. Your path to Software Engineer)."
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Narrative overview of the learning journey and expected outcomes."
+        },
+        "estimatedCompletion": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Human-readable completion estimate aligned with the user's timeline (e.g. 12 months)."
+        },
+        "difficulty": {
+          "$ref": "#/$defs/difficultyLevel"
+        },
+        "keyHighlights": {
+          "type": "array",
+          "description": "Short bullet-style highlights summarising the most important aspects of the roadmap.",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "timeline": {
+      "type": "object",
+      "description": "Temporal structure of the roadmap from start to goal.",
+      "additionalProperties": false,
+      "required": ["duration", "milestones"],
+      "properties": {
+        "duration": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Total roadmap duration in human-readable form (e.g. 12 months)."
+        },
+        "durationMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120,
+          "description": "Optional normalised duration in months for sorting, progress tracking, and chart rendering."
+        },
+        "milestones": {
+          "type": "array",
+          "description": "Ordered milestones spanning the roadmap timeline.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/milestone"
+          }
+        }
+      }
+    },
+    "milestone": {
+      "type": "object",
+      "description": "A significant checkpoint within the roadmap timeline.",
+      "additionalProperties": false,
+      "required": ["title", "startMonth", "endMonth", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional stable identifier for progress tracking and bookmarks."
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "startMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Inclusive start month relative to roadmap start (month 1 = first month)."
+        },
+        "endMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Inclusive end month relative to roadmap start."
+        },
+        "description": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "What the learner should achieve during this milestone period."
+        }
+      }
+    },
+    "learningPhase": {
+      "type": "object",
+      "description": "A focused stage of learning within the roadmap.",
+      "additionalProperties": false,
+      "required": [
+        "phaseNumber",
+        "title",
+        "duration",
+        "goal",
+        "topics",
+        "deliverables",
+        "successCriteria"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional stable identifier for progress tracking and bookmarks."
+        },
+        "phaseNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Sequential phase order starting at 1."
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "duration": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Human-readable phase duration (e.g. 6–8 weeks)."
+        },
+        "goal": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Primary objective the learner should accomplish in this phase."
+        },
+        "topics": {
+          "type": "array",
+          "description": "Key subjects and skills covered in this phase.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "deliverables": {
+          "type": "array",
+          "description": "Tangible outputs the learner should produce (e.g. projects, assessments).",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "successCriteria": {
+          "type": "array",
+          "description": "Measurable indicators that the phase has been completed successfully.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "description": "A recommended hands-on project for skill application.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "difficulty",
+        "description",
+        "skills",
+        "estimatedTime"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional stable identifier for progress tracking and bookmarks."
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "difficulty": {
+          "$ref": "#/$defs/projectDifficulty"
+        },
+        "description": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "What the project involves and why it is valuable."
+        },
+        "skills": {
+          "type": "array",
+          "description": "Skills demonstrated or developed through this project.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "estimatedTime": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Expected time to complete (e.g. 2–3 weeks)."
+        },
+        "relatedPhaseNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Optional link to the learning phase this project best aligns with."
+        }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "description": "A curated learning resource recommendation. URLs are reserved for a future schema version.",
+      "additionalProperties": false,
+      "required": ["category", "title", "type", "isFree", "reason"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional stable identifier for bookmarks and history."
+        },
+        "category": {
+          "$ref": "#/$defs/resourceCategory"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Resource name only — no URLs in v1."
+        },
+        "type": {
+          "$ref": "#/$defs/resourceType"
+        },
+        "isFree": {
+          "type": "boolean",
+          "description": "Whether the resource is freely accessible."
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Why this resource is recommended for this learner and roadmap."
+        },
+        "relatedPhaseNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Optional link to the learning phase this resource supports."
+        }
+      }
+    },
+    "careerAdvice": {
+      "type": "object",
+      "description": "Practical career guidance tailored to the user's goal.",
+      "additionalProperties": false,
+      "required": ["tips", "commonMistakes", "interviewPreparation"],
+      "properties": {
+        "tips": {
+          "type": "array",
+          "description": "Actionable career tips relevant to the target role.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "commonMistakes": {
+          "type": "array",
+          "description": "Pitfalls learners commonly encounter on this path.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "interviewPreparation": {
+          "type": "array",
+          "description": "Guidance for preparing for interviews in the target field.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "responsibleAI": {
+      "type": "object",
+      "description": "Transparency, limitations, and responsible-use guidance. Reinforces that ALTAIR provides guidance, not guarantees.",
+      "additionalProperties": false,
+      "required": ["disclaimer", "limitations", "recommendations"],
+      "properties": {
+        "disclaimer": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Clear statement that the roadmap is AI-generated guidance, not professional or guaranteed advice."
+        },
+        "limitations": {
+          "type": "array",
+          "description": "Known limitations of AI-generated roadmaps and generalised recommendations.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "recommendations": {
+          "type": "array",
+          "description": "Suggestions for how the user should interpret and apply the roadmap responsibly.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "nextSteps": {
+      "type": "object",
+      "description": "Actionable follow-ups that power the Refine Roadmap experience and learner momentum.",
+      "additionalProperties": false,
+      "required": ["recommendedAction", "suggestions"],
+      "properties": {
+        "recommendedAction": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "The single most important next action the learner should take."
+        },
+        "suggestions": {
+          "type": "array",
+          "description": "Optional refinement prompts or follow-up directions the user may explore.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "description": "How personalised the roadmap can be based on the information the user provided — NOT a measure of AI correctness.",
+      "additionalProperties": false,
+      "required": ["score", "reason"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Personalisation confidence score from 0–100. Higher scores indicate richer user input (e.g. detailed additionalInfo, specific goals)."
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Human-readable explanation of why this score was assigned."
+        },
+        "factors": {
+          "type": "array",
+          "description": "Optional breakdown of inputs that influenced the score.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["factor", "impact"],
+            "properties": {
+              "factor": {
+                "$ref": "#/$defs/nonEmptyString",
+                "description": "Input dimension assessed (e.g. additionalInfo, timeline specificity)."
+              },
+              "impact": {
+                "type": "string",
+                "enum": ["positive", "neutral", "negative"],
+                "description": "Whether this factor increased, did not affect, or reduced personalisation confidence."
+              }
+            }
+          }
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Forward-compatible extension bucket for features not yet in the core schema (bookmarks, progress, analytics). Clients MUST ignore unknown keys they do not understand.",
+      "additionalProperties": true,
+      "properties": {
+        "bookmarks": {
+          "type": "array",
+          "description": "Reserved for future bookmark references (resource/project/phase IDs).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "progress": {
+          "type": "object",
+          "description": "Reserved for future learner progress tracking.",
+          "additionalProperties": true
+        },
+        "analytics": {
+          "type": "object",
+          "description": "Reserved for future usage and engagement metadata.",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schemaVersion": "1.0.0",
+      "metadata": {
+        "roadmapId": "550e8400-e29b-41d4-a716-446655440000",
+        "careerGoal": "Software Engineer",
+        "country": "India",
+        "educationLevel": "Undergraduate",
+        "currentKnowledge": "Beginner",
+        "studyHoursPerWeek": "10 hrs",
+        "learningStyle": "Hands-on Projects",
+        "timeline": "1 Year",
+        "additionalInfo": "Interested in web development and open source.",
+        "generatedAt": "2026-07-29T10:00:00.000Z",
+        "lastUpdated": "2026-07-29T10:00:00.000Z",
+        "version": 1,
+        "status": "active",
+        "source": "initial_generation",
+        "locale": "en-GB"
+      },
+      "overview": {
+        "title": "Your path to Software Engineer",
+        "summary": "A structured 12-month plan building programming fundamentals, web development skills, and portfolio projects aligned to your study pace.",
+        "estimatedCompletion": "12 months",
+        "difficulty": "Beginner",
+        "keyHighlights": [
+          "Foundation-first approach with incremental project work",
+          "Aligned to 10 hours per week study commitment",
+          "Portfolio-focused milestones for job readiness"
+        ]
+      },
+      "timeline": {
+        "duration": "12 months",
+        "durationMonths": 12,
+        "milestones": [
+          {
+            "title": "Programming Foundations",
+            "startMonth": 1,
+            "endMonth": 3,
+            "description": "Learn core programming concepts and problem-solving basics."
+          }
+        ]
+      },
+      "learningPhases": [
+        {
+          "phaseNumber": 1,
+          "title": "Core Programming",
+          "duration": "8 weeks",
+          "goal": "Write clean programs and understand computational thinking.",
+          "topics": ["Variables and data types", "Control flow", "Functions"],
+          "deliverables": ["CLI calculator", "Todo list application"],
+          "successCriteria": [
+            "Can solve beginner coding problems independently",
+            "Can explain code structure to another learner"
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "title": "Personal Portfolio Website",
+          "difficulty": "Beginner",
+          "description": "Build a responsive portfolio showcasing learning progress and projects.",
+          "skills": ["HTML", "CSS", "JavaScript"],
+          "estimatedTime": "2–3 weeks",
+          "relatedPhaseNumber": 1
+        }
+      ],
+      "resources": [
+        {
+          "category": "Fundamentals",
+          "title": "Introduction to Programming Concepts",
+          "type": "Course",
+          "isFree": true,
+          "reason": "Matches your hands-on learning style and beginner level."
+        }
+      ],
+      "careerAdvice": {
+        "tips": [
+          "Build a consistent weekly study routine and track completed milestones."
+        ],
+        "commonMistakes": [
+          "Skipping fundamentals to jump directly into advanced frameworks."
+        ],
+        "interviewPreparation": [
+          "Practice explaining projects clearly and documenting your learning process."
+        ]
+      },
+      "responsibleAI": {
+        "disclaimer": "This roadmap is AI-generated guidance based on the information you provided. It does not guarantee employment outcomes or replace professional career counselling.",
+        "limitations": [
+          "Resource availability and job markets change over time.",
+          "Recommendations are generalised and may not reflect every local opportunity."
+        ],
+        "recommendations": [
+          "Validate important decisions with mentors, educators, or industry professionals.",
+          "Adapt the roadmap as your goals and circumstances evolve."
+        ]
+      },
+      "nextSteps": {
+        "recommendedAction": "Begin Phase 1 by setting up your development environment and completing the first week of topics.",
+        "suggestions": [
+          "Refine timeline if your availability changes",
+          "Focus more on backend skills if web development is not your priority"
+        ]
+      },
+      "confidence": {
+        "score": 78,
+        "reason": "Good personalisation based on clear career goal, study hours, and learning style. Additional context provided further improved tailoring.",
+        "factors": [
+          {
+            "factor": "additionalInfo",
+            "impact": "positive"
+          },
+          {
+            "factor": "timeline specificity",
+            "impact": "positive"
+          }
+        ]
+      }
+    }
+  ]
+}

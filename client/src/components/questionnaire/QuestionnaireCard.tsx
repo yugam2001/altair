@@ -108,9 +108,7 @@ export default function QuestionnaireCard() {
     if (step < TOTAL_STEPS) {
       goToStep(step + 1, 1)
     } else {
-      // Backend integration point — state is ready in `data`
-      console.info('Questionnaire complete:', data)
-      navigate('/launch')
+      navigate('/launch', { state: { questionnaire: data } })
     }
   }, [step, data, goToStep, navigate])
 

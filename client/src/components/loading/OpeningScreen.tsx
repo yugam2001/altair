@@ -1,13 +1,33 @@
-import { useCallback, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useRef } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { submitQuestionnaire } from '../../services/roadmapApi'
+import type { QuestionnaireState } from '../../types/questionnaire'
 import ConstellationLoader from './ConstellationLoader'
 import { OPENING_SCREEN_IMAGE } from './constants'
 
 export { OPENING_SCREEN_IMAGE }
 
+interface LaunchLocationState {
+  questionnaire?: QuestionnaireState
+}
+
 export default function OpeningScreen() {
   const navigate = useNavigate()
+  const location = useLocation()
   const hasCompletedRef = useRef(false)
+  const questionnaire = (location.state as LaunchLocationState | null)?.questionnaire
+
+  useEffect(() => {
+    if (!questionnaire) return
+
+    void submitQuestionnaire(questionnaire)
+      .then((response) => {
+        console.log('Backend response:', response)
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to submit questionnaire:', error)
+      })
+  }, [questionnaire])
 
   const handleSequenceComplete = useCallback(() => {
     if (hasCompletedRef.current) return
