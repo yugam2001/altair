@@ -6,6 +6,8 @@ import { buildRoadmapPrompt } from "../prompts/promptBuilder";
 import type { QuestionnaireResponses } from "../prompts/user.prompt";
 import { generateContent } from "../providers/gemini.provider";
 import { parseAiJson } from "../utils/parseAiJson";
+import { normalizeRoadmapResponse } from "../utils/normalizeRoadmapResponse";
+import { prepareRoadmapSchemaForGemini } from "../utils/prepareGeminiSchema";
 import {
   validateRoadmap,
   type RoadmapData,
@@ -104,7 +106,9 @@ export async function generateRoadmap(
   let aiResponse: string;
 
   try {
-    aiResponse = await generateContent(prompt);
+    aiResponse = await generateContent(prompt, {
+      responseJsonSchema: prepareRoadmapSchemaForGemini(),
+    });
   } catch (error) {
     console.error("Gemini API error:", error);
     throw error;
@@ -127,7 +131,8 @@ export async function generateRoadmap(
 
   console.log("JSON parsed. Validating against roadmap schema...");
 
-  const validation = validateRoadmap(parsedResponse);
+  const normalizedResponse = normalizeRoadmapResponse(parsedResponse);
+  const validation = validateRoadmap(normalizedResponse);
 
   if (!validation.valid) {
     console.error("Roadmap validation failed:", validation.errors);

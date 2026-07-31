@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Share2 } from 'lucide-react'
+import type { RoadmapData } from '../../types/roadmap'
+import { useToast } from '../ui/ToastProvider'
+import { shareRoadmap } from '../../utils/shareRoadmap'
 import { getInitialFromCareerGoal } from './roadmapSections'
 import RoadmapDownloadPopover from './RoadmapDownloadPopover'
 
@@ -15,13 +18,36 @@ const NAV_ITEMS: Array<{
 ]
 
 interface RoadmapTopNavProps {
+  roadmap: RoadmapData
   isRefining: boolean
   onRefine: () => void
   avatarInitial?: string
 }
 
-export default function RoadmapTopNav({ isRefining, onRefine, avatarInitial }: RoadmapTopNavProps) {
+export default function RoadmapTopNav({
+  roadmap,
+  isRefining,
+  onRefine,
+  avatarInitial,
+}: RoadmapTopNavProps) {
   const [activeHref, setActiveHref] = useState('#roadmap-content')
+  const { showToast, showErrorToast } = useToast()
+
+  const handleShare = useCallback(async () => {
+    try {
+      const result = await shareRoadmap(roadmap.overview.title)
+
+      if (result === 'copied') {
+        showToast('Link copied to clipboard.')
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return
+      }
+
+      showErrorToast()
+    }
+  }, [roadmap.overview.title, showErrorToast, showToast])
 
   useEffect(() => {
     const refineSection = document.getElementById('continue-planning')
@@ -106,10 +132,11 @@ export default function RoadmapTopNav({ isRefining, onRefine, avatarInitial }: R
         </ul>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <RoadmapDownloadPopover />
+          <RoadmapDownloadPopover roadmap={roadmap} />
           <button
             type="button"
             aria-label="Share roadmap"
+            onClick={() => void handleShare()}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-blue-400/15 bg-blue-950/50 text-blue-100/70 transition-colors duration-200 hover:bg-blue-900/60 hover:text-white"
           >
             <Share2 className="h-4 w-4" />

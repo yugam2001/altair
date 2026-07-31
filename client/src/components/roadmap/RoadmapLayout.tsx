@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { RoadmapData } from '../../types/roadmap'
+import { ToastProvider } from '../ui/ToastProvider'
 import RoadmapBackground from './RoadmapBackground'
 import RoadmapFooter from './RoadmapFooter'
 import RoadmapHero from './RoadmapHero'
@@ -23,25 +24,28 @@ export default function RoadmapLayout({ roadmap }: RoadmapLayoutProps) {
   }
 
   return (
-    <div className="relative min-h-svh text-white">
-      <RoadmapScrollProgress />
-      <RoadmapBackground />
+    <ToastProvider>
+      <div className="relative min-h-svh text-white">
+        <RoadmapScrollProgress />
+        <RoadmapBackground />
 
-      <div className="relative z-10 flex min-h-svh flex-col">
-        <RoadmapTopNav
-          isRefining={isRefining}
-          onRefine={handleRefine}
-          avatarInitial={roadmap.metadata.careerGoal}
-        />
-        <RoadmapHero roadmap={roadmap} />
-        <RoadmapMainContent roadmap={roadmap} />
-        <RoadmapRefineSection
-          isRefining={isRefining}
-          onRefine={handleRefine}
-          nextSteps={roadmap.nextSteps}
-        />
-        <RoadmapFooter />
+        <div className="relative z-10 flex min-h-svh flex-col">
+          <RoadmapTopNav
+            roadmap={roadmap}
+            isRefining={isRefining}
+            onRefine={handleRefine}
+            avatarInitial={roadmap.metadata.careerGoal}
+          />
+          <RoadmapHero roadmap={roadmap} />
+          <RoadmapMainContent roadmap={roadmap} />
+          <RoadmapRefineSection
+            isRefining={isRefining}
+            onRefine={handleRefine}
+            nextSteps={roadmap.nextSteps}
+          />
+          <RoadmapFooter />
+        </div>
       </div>
-    </div>
+    </ToastProvider>
   )
 }

@@ -1,10 +1,18 @@
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-3.6-flash";
+
+export interface GenerateContentOptions {
+  responseJsonSchema?: unknown;
+}
 
 interface GeminiClient {
   models: {
     generateContent: (params: {
       model: string;
       contents: string;
+      config?: {
+        responseMimeType?: string;
+        responseJsonSchema?: unknown;
+      };
     }) => Promise<{ text?: string }>;
   };
 }
@@ -26,12 +34,23 @@ async function getClient(): Promise<GeminiClient> {
   return client;
 }
 
-export async function generateContent(prompt: string): Promise<string> {
+export async function generateContent(
+  prompt: string,
+  options?: GenerateContentOptions,
+): Promise<string> {
   const ai = await getClient();
+
+  const config = options?.responseJsonSchema
+    ? {
+        responseMimeType: "application/json",
+        responseJsonSchema: options.responseJsonSchema,
+      }
+    : undefined;
 
   const response = await ai.models.generateContent({
     model: GEMINI_MODEL,
     contents: prompt,
+    config,
   });
 
   const text = response.text;
