@@ -21,6 +21,7 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Orbitron', system-ui, sans-serif;
   --font-space: 'Exo 2', 'Orbitron', system-ui, sans-serif;
+  --font-heading: 'Source Serif 4', Georgia, 'Times New Roman', serif;
 }
 
 @layer base {

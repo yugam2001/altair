@@ -20,13 +20,17 @@ export default function PrimaryButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      whileHover={disabled ? undefined : { scale: 1.02, y: -1 }}
-      whileTap={disabled ? undefined : { scale: 0.98 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      className={`group inline-flex items-center gap-2.5 rounded-xl bg-nebula-teal px-8 py-4 text-sm font-semibold text-white shadow-sm transition-shadow duration-300 hover:bg-nebula-teal/90 hover:shadow-lg hover:shadow-nebula-teal/20 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none ${className}`}
+      whileHover={disabled ? undefined : { scale: 1.03, y: -2 }}
+      whileTap={disabled ? undefined : { scale: 0.98, y: 0 }}
+      transition={{ type: 'spring', stiffness: 420, damping: 22 }}
+      className={`group relative inline-flex items-center gap-2.5 overflow-hidden rounded-xl bg-nebula-teal px-8 py-4 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(20,184,166,0.28)] transition-[box-shadow,background-color] duration-300 hover:bg-nebula-teal/95 hover:shadow-[0_8px_28px_rgba(20,184,166,0.38)] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none ${className}`}
     >
-      {children}
-      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
+      />
+      <span className="relative">{children}</span>
+      <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
     </motion.button>
   )
 }
