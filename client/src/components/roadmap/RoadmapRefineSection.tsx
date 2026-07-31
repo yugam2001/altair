@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
+import type { RoadmapNextSteps } from '../../types/roadmap'
 import ScrollReveal from './ScrollReveal'
 
 const shakeVariants = {
@@ -15,11 +16,13 @@ const EMPTY_FIELD_ERROR = 'Please describe your refinement before sending.'
 interface RoadmapRefineSectionProps {
   isRefining: boolean
   onRefine: () => void
+  nextSteps: RoadmapNextSteps
 }
 
 export default function RoadmapRefineSection({
   isRefining,
   onRefine,
+  nextSteps,
 }: RoadmapRefineSectionProps) {
   const [value, setValue] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -56,8 +59,21 @@ export default function RoadmapRefineSection({
                 className="py-6 text-center sm:py-8"
               >
                 <p className="mx-auto max-w-lg text-sm leading-relaxed text-blue-100/65 sm:text-[15px] sm:leading-7">
-                  Your roadmap is ready to guide you forward.
+                  {nextSteps.recommendedAction}
                 </p>
+                {nextSteps.suggestions.length > 0 && (
+                  <ul className="mx-auto mt-4 max-w-lg space-y-1.5 text-left">
+                    {nextSteps.suggestions.map((suggestion, index) => (
+                      <li
+                        key={`${suggestion.slice(0, 24)}-${index}`}
+                        className="flex gap-2 text-sm text-blue-100/55 sm:text-[14px]"
+                      >
+                        <span className="text-blue-300/50" aria-hidden="true">→</span>
+                        <span>{suggestion}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <button
                   type="button"
                   onClick={onRefine}

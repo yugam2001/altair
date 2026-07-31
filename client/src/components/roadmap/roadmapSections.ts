@@ -1,4 +1,6 @@
-/** Main content placeholders — navigation-themed section labels. */
+import type { RoadmapMetadata } from '../../types/roadmap'
+
+/** Main content section labels — navigation-themed UI copy. */
 export const ROADMAP_CONTENT_SECTIONS = [
   {
     id: 'overview',
@@ -37,11 +39,40 @@ export const ROADMAP_CONTENT_SECTIONS = [
   },
 ] as const
 
-/** Route metadata chips — shell placeholders. */
-export const HERO_META_CHIPS = [
-  { label: 'Country', value: 'India' },
-  { label: 'Current Level', value: 'Beginner' },
-  { label: 'Timeline', value: '12 Months' },
-  { label: 'Study Time', value: '8 hrs/week' },
-  { label: 'Created', value: 'Just Now' },
-] as const
+export type RoadmapSectionId = (typeof ROADMAP_CONTENT_SECTIONS)[number]['id']
+
+export function buildHeroMetaChips(metadata: RoadmapMetadata) {
+  return [
+    { label: 'Country', value: metadata.country },
+    { label: 'Current Level', value: metadata.currentKnowledge },
+    { label: 'Timeline', value: metadata.timeline },
+    { label: 'Study Time', value: metadata.studyHoursPerWeek },
+    { label: 'Created', value: formatGeneratedAt(metadata.generatedAt) },
+  ]
+}
+
+function formatGeneratedAt(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return 'Recently'
+
+  const diffMs = Date.now() - date.getTime()
+  if (diffMs < 60_000) return 'Just Now'
+
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+export function getTimeGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good Morning'
+  if (hour < 17) return 'Good Afternoon'
+  return 'Good Evening'
+}
+
+export function getInitialFromCareerGoal(careerGoal: string): string {
+  const trimmed = careerGoal.trim()
+  return trimmed ? trimmed.charAt(0).toUpperCase() : 'A'
+}

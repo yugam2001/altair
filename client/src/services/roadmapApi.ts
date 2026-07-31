@@ -1,11 +1,19 @@
 import type { QuestionnaireState } from '../types/questionnaire'
+import type { RoadmapData } from '../types/roadmap'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
-export interface RoadmapSubmitResponse {
-  success: boolean
+export interface RoadmapSubmitSuccess {
+  success: true
+  roadmap: RoadmapData
+}
+
+export interface RoadmapSubmitFailure {
+  success: false
   message: string
 }
+
+export type RoadmapSubmitResponse = RoadmapSubmitSuccess | RoadmapSubmitFailure
 
 export async function submitQuestionnaire(
   questionnaire: QuestionnaireState,
@@ -18,9 +26,13 @@ export async function submitQuestionnaire(
     body: JSON.stringify(questionnaire),
   })
 
+  const data = (await response.json()) as RoadmapSubmitResponse
+
   if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`)
+    const message =
+      !data.success ? data.message : `Request failed with status ${response.status}`
+    throw new Error(message)
   }
 
-  return response.json() as Promise<RoadmapSubmitResponse>
+  return data
 }

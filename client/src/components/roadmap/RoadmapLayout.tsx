@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { RoadmapData } from '../../types/roadmap'
 import RoadmapBackground from './RoadmapBackground'
 import RoadmapFooter from './RoadmapFooter'
 import RoadmapHero from './RoadmapHero'
@@ -7,7 +8,11 @@ import RoadmapRefineSection from './RoadmapRefineSection'
 import RoadmapScrollProgress from './RoadmapScrollProgress'
 import RoadmapTopNav from './RoadmapTopNav'
 
-export default function RoadmapLayout() {
+interface RoadmapLayoutProps {
+  roadmap: RoadmapData
+}
+
+export default function RoadmapLayout({ roadmap }: RoadmapLayoutProps) {
   const [isRefining, setIsRefining] = useState(false)
 
   function handleRefine() {
@@ -23,10 +28,18 @@ export default function RoadmapLayout() {
       <RoadmapBackground />
 
       <div className="relative z-10 flex min-h-svh flex-col">
-        <RoadmapTopNav isRefining={isRefining} onRefine={handleRefine} />
-        <RoadmapHero />
-        <RoadmapMainContent />
-        <RoadmapRefineSection isRefining={isRefining} onRefine={handleRefine} />
+        <RoadmapTopNav
+          isRefining={isRefining}
+          onRefine={handleRefine}
+          avatarInitial={roadmap.metadata.careerGoal}
+        />
+        <RoadmapHero roadmap={roadmap} />
+        <RoadmapMainContent roadmap={roadmap} />
+        <RoadmapRefineSection
+          isRefining={isRefining}
+          onRefine={handleRefine}
+          nextSteps={roadmap.nextSteps}
+        />
         <RoadmapFooter />
       </div>
     </div>

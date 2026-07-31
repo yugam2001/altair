@@ -1,7 +1,12 @@
-import RoadmapSectionPlaceholder from './RoadmapSectionPlaceholder'
+import type { RoadmapData } from '../../types/roadmap'
+import RoadmapSection from './RoadmapSection'
 import { ROADMAP_CONTENT_SECTIONS } from './roadmapSections'
 
-export default function RoadmapMainContent() {
+interface RoadmapMainContentProps {
+  roadmap: RoadmapData
+}
+
+export default function RoadmapMainContent({ roadmap }: RoadmapMainContentProps) {
   return (
     <div
       id="roadmap-content"
@@ -14,10 +19,11 @@ export default function RoadmapMainContent() {
       <div className="rounded-[1.75rem] border border-blue-400/15 bg-[#0a1224]/65 p-6 shadow-[0_16px_48px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl sm:rounded-[2rem] sm:p-8 md:p-10 lg:p-12">
         {ROADMAP_CONTENT_SECTIONS.map((section, index) => (
           <div key={section.id}>
-            <RoadmapSectionPlaceholder
+            <RoadmapSection
               sectionId={section.id}
               title={section.title}
               description={section.description}
+              roadmap={roadmap}
             />
             {index < ROADMAP_CONTENT_SECTIONS.length - 1 && (
               <div className="h-px w-full bg-blue-400/10" aria-hidden="true" />

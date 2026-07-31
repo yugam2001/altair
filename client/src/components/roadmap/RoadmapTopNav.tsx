@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Share2 } from 'lucide-react'
+import { getInitialFromCareerGoal } from './roadmapSections'
 import RoadmapDownloadPopover from './RoadmapDownloadPopover'
 
 const NAV_ITEMS: Array<{
@@ -16,9 +17,10 @@ const NAV_ITEMS: Array<{
 interface RoadmapTopNavProps {
   isRefining: boolean
   onRefine: () => void
+  avatarInitial?: string
 }
 
-export default function RoadmapTopNav({ isRefining, onRefine }: RoadmapTopNavProps) {
+export default function RoadmapTopNav({ isRefining, onRefine, avatarInitial }: RoadmapTopNavProps) {
   const [activeHref, setActiveHref] = useState('#roadmap-content')
 
   useEffect(() => {
@@ -114,9 +116,9 @@ export default function RoadmapTopNav({ isRefining, onRefine }: RoadmapTopNavPro
           </button>
           <div
             className="flex h-9 w-9 items-center justify-center rounded-full border border-blue-400/20 bg-gradient-to-br from-blue-400/25 to-blue-950/60 text-[11px] font-semibold text-white"
-            aria-label="User avatar placeholder"
+            aria-label="User avatar"
           >
-            Y
+            {getInitialFromCareerGoal(avatarInitial ?? '')}
           </div>
         </div>
       </nav>

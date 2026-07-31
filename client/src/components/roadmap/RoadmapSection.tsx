@@ -1,18 +1,22 @@
 import AltairSignatureBadge from './AltairSignatureBadge'
-import RoadmapContentSkeleton from './RoadmapContentSkeleton'
+import RoadmapSectionContent from './RoadmapSectionContent'
 import ScrollReveal from './ScrollReveal'
+import type { RoadmapData } from '../../types/roadmap'
+import type { RoadmapSectionId } from './roadmapSections'
 
-interface RoadmapSectionPlaceholderProps {
-  sectionId: string
+interface RoadmapSectionProps {
+  sectionId: RoadmapSectionId
   title: string
   description: string
+  roadmap: RoadmapData
 }
 
-export default function RoadmapSectionPlaceholder({
+export default function RoadmapSection({
   sectionId,
   title,
   description,
-}: RoadmapSectionPlaceholderProps) {
+  roadmap,
+}: RoadmapSectionProps) {
   return (
     <ScrollReveal>
       <section className="py-10 sm:py-12 md:py-14" aria-label={`${title} section`}>
@@ -28,12 +32,8 @@ export default function RoadmapSectionPlaceholder({
 
         <div className="mt-6 h-px w-full bg-blue-400/15" aria-hidden="true" />
 
-        <div
-          className="mt-8 min-h-[120px] rounded-xl border border-blue-400/10 bg-[#060d1f]/40 p-4 sm:min-h-[140px] sm:p-5 md:min-h-[160px]"
-          aria-busy="true"
-          aria-label={`${title} loading`}
-        >
-          <RoadmapContentSkeleton sectionId={sectionId} />
+        <div className="mt-8 min-h-[120px] rounded-xl border border-blue-400/10 bg-[#060d1f]/40 p-4 sm:min-h-[140px] sm:p-5 md:min-h-[160px]">
+          <RoadmapSectionContent sectionId={sectionId} roadmap={roadmap} />
         </div>
       </section>
     </ScrollReveal>
