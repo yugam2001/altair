@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Logo from './Logo'
@@ -12,10 +12,63 @@ const navLinks = [
   { label: 'Vision', href: '#vision' },
 ] as const
 
+type NavHref = (typeof navLinks)[number]['href']
+
+const SCROLL_SPY_OFFSET = 96
+
+function getActiveSectionHref(): NavHref {
+  let activeHref: NavHref = navLinks[0].href
+
+  for (const { href } of navLinks) {
+    const section = document.getElementById(href.slice(1))
+    if (!section) continue
+
+    if (section.getBoundingClientRect().top <= SCROLL_SPY_OFFSET) {
+      activeHref = href
+    }
+  }
+
+  return activeHref
+}
+
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [activeHref, setActiveHref] = useState<NavHref>(navLinks[0].href)
 
   const closeMobile = () => setMobileOpen(false)
+
+  useEffect(() => {
+    function updateActiveSection() {
+      setActiveHref(getActiveSectionHref())
+    }
+
+    updateActiveSection()
+    window.addEventListener('scroll', updateActiveSection, { passive: true })
+    window.addEventListener('resize', updateActiveSection)
+
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection)
+      window.removeEventListener('resize', updateActiveSection)
+    }
+  }, [])
+
+  const linkClassName = (href: NavHref, mobile = false) => {
+    const isActive = activeHref === href
+
+    if (mobile) {
+      return `block rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-gray-50 hover:text-primary-text ${
+        isActive
+          ? 'font-semibold text-primary-text'
+          : 'font-medium text-secondary-text'
+      }`
+    }
+
+    return `text-sm transition-colors duration-300 hover:text-primary-text ${
+      isActive
+        ? 'font-semibold text-primary-text'
+        : 'font-medium text-secondary-text'
+    }`
+  }
 
   return (
     <motion.header
@@ -29,7 +82,7 @@ export default function Navbar() {
         aria-label="Main navigation"
       >
         <a
-          href="#home"
+          href="/#home"
           className="flex items-center gap-3 transition-opacity hover:opacity-80"
         >
           <Logo size="nav" />
@@ -42,23 +95,15 @@ export default function Navbar() {
           {navLinks.map(({ label, href }) => (
             <li key={href}>
               <a
-                href={href}
-                className="text-sm font-medium text-secondary-text transition-colors duration-300 hover:text-primary-text"
+                href={`/${href}`}
+                aria-current={activeHref === href ? 'true' : undefined}
+                className={linkClassName(href)}
               >
                 {label}
               </a>
             </li>
           ))}
         </ul>
-
-        <div className="hidden lg:block">
-          <a
-            href="#generate"
-            className="inline-flex items-center rounded-lg bg-deep-space px-4 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-midnight-blue"
-          >
-            Generate Roadmap
-          </a>
-        </div>
 
         <button
           type="button"
@@ -84,23 +129,15 @@ export default function Navbar() {
               {navLinks.map(({ label, href }) => (
                 <li key={href}>
                   <a
-                    href={href}
+                    href={`/${href}`}
                     onClick={closeMobile}
-                    className="block rounded-lg px-3 py-2.5 text-sm font-medium text-secondary-text transition-colors hover:bg-gray-50 hover:text-primary-text"
+                    aria-current={activeHref === href ? 'true' : undefined}
+                    className={linkClassName(href, true)}
                   >
                     {label}
                   </a>
                 </li>
               ))}
-              <li className="pt-2">
-                <a
-                  href="#generate"
-                  onClick={closeMobile}
-                  className="block rounded-lg bg-deep-space px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-midnight-blue"
-                >
-                  Generate Roadmap
-                </a>
-              </li>
             </ul>
           </motion.div>
         )}
