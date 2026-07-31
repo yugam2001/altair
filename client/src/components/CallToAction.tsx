@@ -11,7 +11,7 @@ export default function CallToAction({
   generateDisabled = false,
 }: CallToActionProps) {
   return (
-    <section className="px-6 py-24">
+    <section className="border-t border-gray-200/80 bg-white px-6 py-24 md:py-28">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}

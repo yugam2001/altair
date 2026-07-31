@@ -21,7 +21,7 @@ export default function SectionHeader({
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className={`max-w-2xl ${alignClass}`}
     >
-      <h2 className="text-3xl font-bold tracking-tight text-deep-space sm:text-4xl">
+      <h2 className="font-heading text-3xl font-semibold tracking-tight text-deep-space sm:text-4xl">
         {title}
       </h2>
       {subtitle && (
