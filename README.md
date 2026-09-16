@@ -1,141 +1,155 @@
+<div align="center">
+
+<img src="assets/logo.png" alt="ALTAIR" width="150" />
+
 # ALTAIR
 
-<p align="center">
-  <img src="assets/logo.png" alt="ALTAIR Logo" width="180">
-</p>
+### *Find your way forward.*
 
-<h3 align="center">Find your way forward.</h3>
+**An AI-powered product that turns learner context into structured, personalised education and career roadmaps.**
 
-<p align="center">
-  An AI-powered web application that generates personalized learning roadmaps to help learners achieve their career goals through structured, responsible, and actionable guidance.
-</p>
+<br/>
 
----
+<a href="https://altair-guide.vercel.app/"><img src="https://img.shields.io/badge/Live_Product-14B8A6?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Product" /></a>
 
-## 🌟 Overview
+<br/><br/>
 
-Choosing what to learn is often more difficult than learning itself.
+<img src="https://skillicons.dev/icons?i=react,ts,nodejs,express,tailwind,vite" height="42" alt="React, TypeScript, Node.js, Express, Tailwind CSS and Vite" />
 
-ALTAIR helps learners navigate their educational journey by generating personalized learning roadmaps based on their career aspirations, current knowledge, available study time, preferred learning style, and target completion timeline.
+<br/>
 
-Rather than offering generic recommendations, ALTAIR creates structured learning plans that guide users step-by-step toward their desired career.
+`Google Gemini` · `Structured Output` · `JSON Schema Validation` · `Responsible AI`
+
+</div>
 
 ---
 
-## ✨ Features
+## The Problem
 
-- 🎯 Personalized learning roadmaps
-- 🧠 AI-generated learning phases
-- 📅 Weekly study timeline
-- 🚀 Project recommendations
-- 📚 Curated learning resources
-- 💡 Practical learning tips
-- ⚠️ Common mistakes to avoid
-- 🤝 Responsible AI recommendations
+Choosing a career direction is only the beginning. Learners still have to work out **what to learn, in what order, how deeply, through which projects, and within the time they actually have available**.
 
----
+Generic roadmaps rarely account for where someone is starting from. ALTAIR was built around a different idea: collect meaningful learner context first, then use AI to generate a roadmap that is structured enough to become a usable product experience rather than a block of generated text.
 
-## 🛠️ Tech Stack
+## What ALTAIR Does
 
-### Frontend
+ALTAIR guides a learner through a multi-step questionnaire covering their career goal, current knowledge, education context, learning preferences and available time. That context is processed by a Node.js/Express backend and sent to Google Gemini with explicit output requirements.
 
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- React Router
-- Axios
+The generated response is normalised and validated against a roadmap schema before the frontend renders it as a personalised experience containing learning phases, skills, projects, resources, certifications and milestones.
 
-### Backend
+## Product Flow
 
-- Node.js
-- Express.js
+```text
+Learner Context
+      ↓
+React + TypeScript Questionnaire
+      ↓
+Node.js + Express API
+      ↓
+Context & Prompt Construction
+      ↓
+Google Gemini
+      ↓
+Structured JSON Output
+      ↓
+Normalisation + Schema Validation
+      ↓
+Personalised Roadmap UI
+```
 
-### AI
+## Engineering Highlights
 
-- OpenAI API
+- **Structured AI generation** — Gemini is asked for structured JSON rather than uncontrolled prose.
+- **Schema validation** — generated roadmap data is validated before being trusted by the UI.
+- **Separation of concerns** — questionnaire UI, domain knowledge, prompt construction, AI provider logic, response parsing and validation live in distinct layers.
+- **Domain-aware context** — career domains, pathways, education stages, country rules and journey mappings enrich the request before generation.
+- **Responsible AI** — ALTAIR is designed to support learner decision-making rather than present generated guidance as guaranteed or authoritative.
+- **Product-focused output** — AI output is transformed into sections users can navigate, refine and export rather than displayed as a raw chat response.
 
-### Deployment
+## Core Features
 
-- Vercel
-- Render
+| Personalisation | Roadmap Experience | AI Engineering |
+| --- | --- | --- |
+| Career goals & context | Learning phases | Gemini integration |
+| Current knowledge | Skills & milestones | Structured outputs |
+| Study availability | Project recommendations | JSON schema validation |
+| Learning preferences | Resources & certifications | Response normalisation |
+| Education context | Refine & export flow | Responsible prompting |
 
----
+## Tech Stack
 
-## 📂 Project Structure
+**Frontend:** React 19, TypeScript, Vite, Tailwind CSS, React Router, Framer Motion  
+**Backend:** Node.js, Express, TypeScript  
+**AI:** Google Gemini via `@google/genai`  
+**Validation:** AJV + JSON Schema  
+**Deployment:** Vercel (frontend) + Render (backend)
+
+## Repository Structure
 
 ```text
 altair/
-│
-├── client/          # React Frontend
-├── server/          # Express Backend
-├── docs/            # Product & Technical Documentation
-│
-├── README.md
-└── .gitignore
+├── client/
+│   └── src/
+│       ├── components/
+│       │   ├── questionnaire/
+│       │   ├── loading/
+│       │   └── roadmap/
+│       ├── pages/
+│       ├── services/
+│       └── types/
+├── backend/
+│   └── src/
+│       ├── domain/
+│       ├── prompts/
+│       ├── providers/
+│       ├── schemas/
+│       ├── services/
+│       └── utils/
+├── docs/
+└── README.md
 ```
 
----
+## Responsible AI
 
-## 🎯 Project Goals
+ALTAIR treats generated roadmaps as **guidance, not guarantees**. Learners remain responsible for deciding what goals to pursue, which resources to use and how to adapt their roadmap. The project also documents limitations such as outdated resources, incomplete learning sequences and potential geographic, language, industry or educational bias.
 
-ALTAIR is designed to demonstrate:
+See [Responsible AI](docs/RESPONSIBLE_AI.md) for the project's principles and limitations.
 
-- Product Thinking
-- AI Integration
-- Responsible AI
-- Prompt Engineering
-- Software Engineering
-- Modern UI/UX Design
-- Clean Architecture
+## Running Locally
 
----
+### Frontend
 
-## 🤖 Responsible AI
+```bash
+cd client
+npm install
+npm run dev
+```
 
-ALTAIR uses Large Language Models to generate personalized learning roadmaps.
+### Backend
 
-AI-generated recommendations are intended to assist learners and should not be considered absolute or guaranteed. Users are encouraged to verify learning resources and adapt recommendations to their individual goals and circumstances.
+```bash
+cd backend
+npm install
+cp .env.example .env
+# Add your GEMINI_API_KEY to .env
+npm run dev
+```
 
----
+The frontend expects `VITE_API_BASE_URL`. The backend expects `GEMINI_API_KEY`.
 
-## 🚧 Project Status
+## Project Status
 
-This project is currently under active development.
+ALTAIR is a working MVP deployed on Vercel and Render. The current focus is improving reliability, testing, product polish and documentation while continuing to strengthen the roadmap-generation pipeline.
 
-Upcoming milestones include:
+## Documentation
 
-- Product Planning
-- UI/UX Design
-- Frontend Development
-- Backend Development
-- AI Integration
-- Testing
-- Deployment
+The `docs/` directory contains the product and engineering thinking behind ALTAIR, including product requirements, personas, user journey, information architecture, design decisions, prompt engineering, API design and Responsible AI documentation.
 
 ---
 
-## 📄 Documentation
+<div align="center">
 
-Project documentation can be found in the **docs/** directory.
+**Built as a practical exploration of Software Engineering × Artificial Intelligence.**
 
-- Product Requirements Document (PRD)
-- User Personas
-- User Journey
-- Information Architecture
-- Design System
-- Prompt Engineering
-- API Design
-- Responsible AI
+*ALTAIR — Find your way forward.*
 
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
----
-
-<p align="center">
-Built with ❤️ to help learners find their way forward.
-</p>
+</div>
