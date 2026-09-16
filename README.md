@@ -24,6 +24,45 @@
 
 ---
 
+## Product Experience
+
+ALTAIR is designed as a guided product rather than a chat interface. The experience begins with a focused questionnaire that captures the learner's direction and context, then turns the generated structure into a roadmap that can be explored section by section.
+
+> **Product screenshots are being prepared for the public showcase.**
+>
+> Add the final files as `assets/questionnaire-showcase.png` and `assets/roadmap-showcase.png`; the README will display them automatically.
+
+<table>
+<tr>
+<td width="50%" align="center" valign="top">
+
+### 01 · Understand the learner
+
+<img src="assets/questionnaire-showcase.png" width="100%" alt="ALTAIR guided learner questionnaire" />
+
+<sub>Career direction · education context · current knowledge · learning preferences · available time</sub>
+
+</td>
+<td width="50%" align="center" valign="top">
+
+### 02 · Build the roadmap
+
+<img src="assets/roadmap-showcase.png" width="100%" alt="ALTAIR personalised AI-generated roadmap" />
+
+<sub>Learning phases · skills · projects · resources · certifications · milestones</sub>
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+
+**Context in → structured guidance out.**
+
+</div>
+
+---
+
 ## The Problem
 
 Choosing a career direction is only the beginning. Learners still have to work out **what to learn, in what order, how deeply, through which projects, and within the time they actually have available**.
