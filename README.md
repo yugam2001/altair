@@ -28,10 +28,6 @@
 
 ALTAIR is designed as a guided product rather than a chat interface. The experience begins with a focused questionnaire that captures the learner's direction and context, then turns the generated structure into a roadmap that can be explored section by section.
 
-> **Product screenshots are being prepared for the public showcase.**
->
-> Add the final files as `assets/questionnaire-showcase.png` and `assets/roadmap-showcase.png`; the README will display them automatically.
-
 <table>
 <tr>
 <td width="50%" align="center" valign="top">
