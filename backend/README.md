@@ -1,338 +1,170 @@
 # ALTAIR Backend
 
-Express + TypeScript API for the ALTAIR learning roadmap application.
+The backend service for **ALTAIR — Find your way forward**, an AI-powered product that transforms learner context into structured, personalised education and career roadmaps.
 
-This backend is currently in **Phase 1** — infrastructure only. It provides a running server, versioned API routes, and frontend communication. AI integration, schema validation, and roadmap generation are not implemented yet.
+Built with **Node.js, Express and TypeScript**, the service enriches questionnaire responses with domain knowledge, constructs a constrained AI prompt, calls **Google Gemini**, normalises the structured response and validates the final roadmap against a JSON Schema before returning it to the client.
 
----
-
-## Prerequisites
-
-- [Node.js](https://nodejs.org/) 18 or later
-- npm (comes with Node.js)
-
----
-
-## Getting Started
-
-### 1. Install dependencies
-
-From the `backend` directory:
-
-```bash
-npm install
-```
-
-### 2. Set up environment variables
-
-Copy the example env file and adjust if needed:
-
-```bash
-cp .env.example .env
-```
-
-### 3. Start the server
-
-**Development** (hot reload with `tsx`):
-
-```bash
-npm run dev
-```
-
-**Production build:**
-
-```bash
-npm run build
-npm start
-```
-
-When the server starts successfully, you should see:
+## Architecture
 
 ```text
-ALTAIR backend running on http://localhost:5000
+Questionnaire
+     ↓
+Express Route
+     ↓
+Roadmap Controller
+     ↓
+Learner Context
+     ↓
+Journey Mapping + Domain Knowledge
+     ↓
+Prompt Builder
+     ↓
+Google Gemini
+     ↓
+Structured JSON
+     ↓
+Response Normalisation
+     ↓
+AJV Schema Validation
+     ↓
+Roadmap Response
 ```
 
----
+The AI provider is deliberately isolated from the rest of the application. Domain knowledge, prompt construction, provider communication, parsing, normalisation and validation are separate layers so the generation pipeline remains understandable and maintainable.
 
-## Environment Variables
+## Engineering Decisions
 
-| Variable | Default | Description        |
-| -------- | ------- | ------------------ |
-| `PORT`   | `5000`  | Port the server listens on |
+- **Domain-aware generation** — learner responses are enriched using career domains, career pathways, education stages, country rules and journey mapping before the prompt is built.
+- **Structured AI output** — Gemini is supplied with a response JSON schema instead of being used as an unconstrained text generator.
+- **Validation before trust** — AI output is parsed, normalised and validated with AJV before it is returned as a successful roadmap.
+- **Provider isolation** — Gemini communication lives in `src/providers/gemini.provider.ts`, keeping model-specific logic out of controllers and business logic.
+- **Thin controllers** — HTTP handling remains small while the roadmap service owns orchestration.
+- **Responsible AI prompting** — prompt principles are kept explicitly in the prompt layer rather than scattered through request handlers.
 
-Example `.env`:
+## Tech Stack
 
-```env
-PORT=5000
-```
+| Layer | Technology |
+| --- | --- |
+| Runtime | Node.js |
+| API | Express |
+| Language | TypeScript |
+| AI | Google Gemini via `@google/genai` |
+| Validation | AJV + JSON Schema |
+| Configuration | dotenv |
+| Deployment | Render |
 
-If port 5000 is already in use, change `PORT` in your `.env` file.
-
----
-
-## Available Scripts
-
-| Command         | Description                                      |
-| --------------- | ------------------------------------------------ |
-| `npm run dev`   | Start development server with hot reload         |
-| `npm run build` | Compile TypeScript to JavaScript in `dist/`      |
-| `npm start`     | Run the compiled production server (`dist/`)     |
-
----
-
-## Project Structure
+## Repository Structure
 
 ```text
 backend/
 ├── src/
-│   ├── app.ts                 # Express app setup (middleware, routes)
-│   ├── server.ts              # Server startup and PORT binding
-│   ├── config/                # Configuration (future use)
-│   ├── controllers/           # Request handlers
-│   ├── middleware/            # Express middleware
-│   ├── routes/                # Route definitions
-│   ├── services/              # Business logic (future use)
-│   ├── utils/                 # Shared utilities (future use)
-│   ├── types/                 # Shared TypeScript types (future use)
-│   ├── domain/                # Career/education domain knowledge
-│   ├── prompts/               # AI prompt templates
-│   └── schemas/               # JSON schemas for roadmap output
-├── .env.example               # Environment variable template
+│   ├── controllers/     # HTTP request handlers
+│   ├── domain/          # Career and education domain knowledge
+│   ├── middleware/      # Global Express middleware
+│   ├── prompts/         # Prompt principles, templates and builder
+│   ├── providers/       # Gemini provider boundary
+│   ├── routes/          # API routes
+│   ├── schemas/         # Roadmap JSON Schema
+│   ├── services/        # Roadmap generation orchestration
+│   ├── utils/           # Parsing, normalisation and validation
+│   ├── app.ts           # Express application
+│   └── server.ts        # Server entry point
+├── .env.example
 ├── package.json
 └── tsconfig.json
 ```
 
-### Architecture
-
-- **`app.ts`** — Creates the Express app, enables CORS and JSON parsing, registers routes, and attaches the global error handler. Exported separately so it can be tested without starting the server.
-- **`server.ts`** — Loads environment variables and starts listening on `PORT`.
-- **Routes** — Define HTTP paths only; logic lives in controllers.
-- **Controllers** — Handle incoming requests and send responses.
-- **Middleware** — Cross-cutting concerns such as error handling.
-
----
-
 ## API
 
-All endpoints are prefixed with `/api/v1`.
+All endpoints are versioned under `/api/v1`.
 
-Base URL (local): `http://localhost:5000`
-
-### Health Check
-
-Verify the server is running.
+### Health
 
 ```http
 GET /api/v1/health
 ```
 
-**Response** `200 OK`
+Used to verify that the service is running.
 
-```json
-{
-  "status": "OK"
-}
-```
-
-**Example:**
-
-```bash
-curl http://localhost:5000/api/v1/health
-```
-
----
-
-### Submit Questionnaire
-
-Accept a questionnaire payload from the frontend. Currently logs the body to the console and returns a success message. No AI or roadmap generation yet.
+### Generate Roadmap
 
 ```http
 POST /api/v1/roadmap
 Content-Type: application/json
 ```
 
-**Request body:** any JSON object.
+The endpoint accepts the questionnaire payload collected by the ALTAIR client. The service converts it into learner context, creates a journey map, builds the Gemini prompt and returns a validated roadmap.
 
-**Response** `200 OK`
+Successful responses use this shape:
 
 ```json
 {
   "success": true,
-  "message": "Questionnaire received successfully."
+  "roadmap": {}
 }
 ```
 
-**Example:**
+Generation, parsing or validation failures are not treated as valid roadmap data. Unexpected errors are passed to the global Express error handler.
+
+## Environment Variables
+
+Create a local `.env` from the committed example:
 
 ```bash
-curl -X POST http://localhost:5000/api/v1/roadmap \
-  -H "Content-Type: application/json" \
-  -d '{
-    "careerGoal": "Software Engineer",
-    "currentLevel": "Beginner",
-    "hoursPerWeek": 10
-  }'
+cp .env.example .env
 ```
 
-The received payload is logged in the server console:
-
-```text
-Received questionnaire: { careerGoal: 'Software Engineer', ... }
-```
-
----
-
-## Error Handling
-
-Unexpected server errors are caught by the global error handler and return:
-
-```http
-HTTP/1.1 500 Internal Server Error
-```
-
-```json
-{
-  "success": false,
-  "message": "Internal Server Error"
-}
-```
-
----
-
-## Tech Stack
-
-- **Runtime:** Node.js
-- **Framework:** Express
-- **Language:** TypeScript
-- **Dev tooling:** tsx (development), tsc (production build)
-
-### Dependencies
-
-| Package  | Purpose                          |
-| -------- | -------------------------------- |
-| `express`| HTTP server and routing          |
-| `cors`   | Cross-origin requests from client|
-| `dotenv` | Load environment variables       |
-
----
-
-## What's Not Implemented Yet
-
-The following are planned for later phases and are intentionally out of scope for Phase 1:
-
-- OpenAI / Gemini / Claude integration
-- Prompt builder usage
-- Journey mapping and roadmap generation
-- JSON schema validation
-- MongoDB / database
-- Authentication
-- Rate limiting
-- Structured logging libraries
-
-The `domain/`, `prompts/`, and `schemas/` folders contain future-phase assets and are not wired into the server yet.
-
----
-
-## Troubleshooting
-
-### Port already in use
-
-```text
-Error: listen EADDRINUSE: address already in use :::5000
-```
-
-Either stop the process using port 5000, or set a different port in `.env`:
+Then configure:
 
 ```env
-PORT=5050
+PORT=5001
+GEMINI_API_KEY=your_key_here
 ```
 
-### Server not responding
+Never commit the real `.env` file or API keys.
 
-1. Confirm the server is running (`npm run dev` or `npm start`).
-2. Hit the health endpoint: `curl http://localhost:5000/api/v1/health`
-3. Check that your `.env` file exists and `PORT` matches the URL you are calling.
+## Running Locally
+
+```bash
+npm install
+npm run dev
+```
+
+For a production build:
+
+```bash
+npm run build
+npm start
+```
+
+## Available Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Run the TypeScript server in watch mode |
+| `npm run build` | Compile TypeScript |
+| `npm start` | Run the compiled server |
+
+## Roadmap Validation
+
+Gemini output is not returned directly to the frontend. The generation pipeline:
+
+1. requests structured JSON from Gemini,
+2. parses the model response,
+3. normalises the result,
+4. validates it against `src/schemas/roadmap.schema.json`, and
+5. returns the roadmap only when validation succeeds.
+
+This boundary is important because model output is treated as untrusted application input until it satisfies the product's expected contract.
+
+## Reliability
+
+The current MVP surfaces provider failures through the backend error path. Retry/backoff, rate limiting, caching, structured observability and broader automated testing are natural reliability improvements as the project evolves; they are intentionally not presented here as already implemented.
+
+## Related Documentation
+
+The repository-level [README](../README.md) provides the full product overview, screenshots, local setup and Responsible AI context. Additional product and engineering documentation lives in the repository's `docs/` directory.
 
 ---
 
-## Connecting the Frontend
-
-Point the React client at the backend base URL, for example:
-
-```text
-http://localhost:5000/api/v1
-```
-
-Ensure CORS is enabled (it is by default in `app.ts`) so browser requests from the Vite dev server are allowed.
-
----
-
-## Phase 5 — Gemini AI Integration
-
-The backend now integrates Google's Gemini API for roadmap generation.
-
-### Request flow
-
-```text
-Questionnaire
-        ↓
-Express Route
-        ↓
-Controller
-        ↓
-Roadmap Service
-        ↓
-Journey Mapping
-        ↓
-Prompt Builder
-        ↓
-Gemini Provider
-        ↓
-Raw AI Response
-        ↓
-Return Response
-```
-
-### Environment variables
-
-Add your Gemini API key to `.env`:
-
-```env
-GEMINI_API_KEY=your_api_key_here
-```
-
-### API response
-
-`POST /api/v1/roadmap` now returns:
-
-```json
-{
-  "success": true,
-  "journeyMap": { ... },
-  "aiResponse": "Raw response returned by Gemini"
-}
-```
-
-### Gemini configuration
-
-- **SDK:** `@google/genai` (official Google Gen AI SDK)
-- **Model:** `gemini-2.5-flash`
-- **Provider:** `src/providers/gemini.provider.ts` — the only file that communicates with Gemini
-
-### Error handling
-
-If the Gemini API call fails, the error is logged and passed to the global error handler, which returns HTTP 500:
-
-```json
-{
-  "success": false,
-  "message": "Internal Server Error"
-}
-```
-
-### Not yet implemented
-
-- JSON parsing of AI response
-- Response schema validation
-- MongoDB
-- Retry logic, streaming, caching, rate limiting
+**ALTAIR — Software Engineering × Artificial Intelligence.**
